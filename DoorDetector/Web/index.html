@@ -1,0 +1,76 @@
+﻿<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <!--<script src="./scripts/vuejs/vue.min.js"></script>-->
+    <script src="./scripts/vuejs/vue.js"></script>
+    <script src="./scripts/ws.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.0/Chart.bundle.min.js"></script>
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+</head>
+<body>
+    <div id="app">
+        <template v-if="view === 'home'">
+            <monday_thirsday id="monday_thursday" :model="dashboard" names="monthmondaythirsday_data" v-on:details="onmondaythursdayDetails">
+            </monday_thirsday>
+            <tile id="week" :model="dashboard" names="week_openingcount,week_openingtime" v-on:details="onweekDetails" class="week" title="current week">
+            </tile>
+            <tile id="month" :model="dashboard" names="month_openingcount,month_openingtime" v-on:details="onmonthDetails" class="month" title="current month">
+            </tile>
+            <tile id="year" :model="dashboard" names="year_openingcount,year_openingtime" v-on:details="onyearDetails" class="year" title="current year">
+            </tile>
+        </template>
+        <template v-if="view === 'yearview'">
+            <header><back v-on:back="showHomeView"></back><span>Year view</span></header>
+            <div class="navigator">
+                <a href="#" v-on:click="doPreviousYear">previous Year</a>
+                <label>{{yeardateref.getFullYear()}}</label>
+                <a href="#" v-on:click="doNextYear">next Year</a>
+            </div>
+            <graph :model="detailsStatsData"></graph>
+            <pagegrid displaycolumns="OpenAt,OpeningTime" v-bind:getpagedata="pageGridGetData" pagesize="20" datatag="year"></pagegrid>
+        </template>
+        <template v-if="view === 'monthview'">
+            <header><back v-on:back="showHomeView"></back><span>Month view</span></header>
+            <div class="navigator">
+                <a href="#" v-on:click="doPreviousMonth">previous Month</a>
+                <label>{{monthdateref.getMonth()+1}}/{{monthdateref.getFullYear()}}</label>
+                <a href="#" v-on:click="doNextMonth">next Month</a>
+            </div>
+            <graph :model="detailsStatsData"></graph>
+            <grid :values="detailsData" displaycolumns="OpenAt,OpeningTime"></grid>
+        </template>
+        <template v-if="view === 'weekview'">
+            <header><back v-on:back="showHomeView"></back><span>Week view</span></header>
+            <div class="navigator">
+                <a href="#" v-on:click="doPreviousWeek">previous Week</a>
+                <label>{{weekdateref.getWeek()}}/{{weekdateref.getFullYear()}}</label>
+                <a href="#" v-on:click="doNextWeek">next Week</a>
+            </div>
+            <graph :model="detailsStatsData"></graph>
+            <grid :values="detailsData" displaycolumns="OpenAt,OpeningTime"></grid>
+        </template>
+        <template v-if="view === 'mondaythursdayview'">
+            <header><back v-on:back="showHomeView"></back><span>Monday/thursday view</span></header>
+            <div>
+                <a href="#" v-on:click="doPreviousMTMonth">previous month</a>
+                <label>{{mondaydateref.getMonth()+1}}/{{mondaydateref.getFullYear()}}</label>
+                <a href="#" v-on:click="doNextMTMonth">next month</a>
+            </div>
+            
+            <grid :values="detailsData" displaycolumns="OpenAt,OpeningTime"></grid>
+        </template>
+        <ul>
+            <li v-for="event in events">
+                <span>{{event.Num}}</span>
+                <span>{{event.Opentime}}</span>
+                <span>{{event.Closetime}}</span>
+                <span>{{ eventdatediff(event)}}</span>
+            </li>
+        </ul>
+    </div>
+    <script src="./scripts/components.js"></script>
+    <script src="./scripts/main.js"></script>
+</body>
+</html>
